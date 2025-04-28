@@ -5,6 +5,8 @@ import os
 import smtplib
 import datetime
 import logging.handlers
+import schedule
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 # The package name is python-dotenv
@@ -26,6 +28,16 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
+def job():
+    yahoo_values = get_yahoo_values()
+    lines = format_values(yahoo_values)
+    send_email(lines)
+
+schedule.every().day.at("09:00").do(job)
+
+while True:
+    schedule.run_pending()
+    time.sleep(60)
 TARGET_PRICES = {
     'AAPL': 170,
     'GOOG': 140,
